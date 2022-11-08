@@ -16,3 +16,12 @@ cookie-parser: sirve para almacenar los tokens en memoria y un refresh token en 
 bcryptjs: sirve para hasherar o encriptar una contraseña
 
 no podemos guardar la sesion del usuario en el servidor
+
+
+ezequiel
+aZcoOoxGOYSAeeRU
+mongodb
+
+uri
+
+mongodb+srv://ezequiel:aZcoOoxGOYSAeeRU@cluster0.yucpy5y.mongodb.net/?retryWrites=true&w=majority
