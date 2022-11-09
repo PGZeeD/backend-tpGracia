@@ -1,6 +1,6 @@
 import { validationResult } from 'express-validator';
 
-export const validationResultExpress = (req, res, next) => {
+export const validarResultadosExpress = (req, res, next) => {
   const errors = validationResult(req);
   console.log(req.body);
   if (!errors.isEmpty()) {
