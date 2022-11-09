@@ -2,7 +2,7 @@ import express from 'express';
 import {
   mostrarPersonas,
   nuevaPersona,
-  mostrarPersona,
+  buscarPersona,
   borrarPersona,
   actualizarPersona,
 } from '../controllers/Persona.controller.js';
@@ -21,9 +21,9 @@ router.post(
   validarResultadosExpress,
   nuevaPersona,
 );
-const byDni = '/persona/:param';
-router.get(byDni, mostrarPersona);
-router.delete(byDni, borrarPersona);
-router.patch(byDni, actualizarPersona);
+const dni = '/persona/:dni';
+router.get(dni, buscarPersona);
+router.delete(dni, borrarPersona);
+router.patch(dni, actualizarPersona);
 
 export default router;

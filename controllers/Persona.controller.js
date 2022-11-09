@@ -3,10 +3,16 @@ import { Persona } from '../models/Persona.model.js';
 export const mostrarPersonas = async (req, res) => {
   try {
     const personas = await Persona.find({});
-    return res.status(200).json({
-      ok: 'Exito al Mostrar Personas',
-      List: personas,
-    });
+    if (!personas) {
+      return res.status(200).json({
+        message: 'Personas no encontradas',
+      });
+    } else {
+      return res.status(200).json({
+        ok: 'Exito al Mostrar Personas',
+        message: personas,
+      });
+    }
   } catch (error) {
     const { message } = error;
     return res.status(404).json({
@@ -20,7 +26,7 @@ export const nuevaPersona = async (req, res) => {
   try {
     const persona = new Persona({ nombre, apellido, dni, email, fnacim, telefono });
     if (persona) await persona.save();
-    return res.json({ ok: 'persona creada' });
+    return res.json({ ok: 'persona creada', message: persona });
   } catch (error) {
     console.log(error);
     if (error.code === 11000) {
@@ -29,16 +35,20 @@ export const nuevaPersona = async (req, res) => {
   }
 };
 
-export const mostrarPersona = async (req, res) => {
+export const buscarPersona = async (req, res) => {
   try {
-    const persona = await Persona.find({
-      $or: [{ dni: req.params.param }, { email: req.params.param }],
-    });
+    const persona = await Persona.findOne({ dni: req.params.dni });
     console.log(persona);
-    return res.status(200).json({
-      ok: 'Conexión exitosa',
-      Respuesta: persona,
-    });
+    if (persona) {
+      return res.status(200).json({
+        ok: 'Exito al buscar Persona',
+        message: persona,
+      });
+    } else {
+      return res.status(200).json({
+        message: 'Persona no encontrada',
+      });
+    }
   } catch (error) {
     const { message } = error;
     return res.status(404).json({
@@ -49,11 +59,17 @@ export const mostrarPersona = async (req, res) => {
 
 export const borrarPersona = async (req, res) => {
   try {
-    const person = await service.deletePerson(req.params.dni);
-    return res.status(200).json({
-      message: 'Processing of the Delete response by DNI to /person',
-      response: person,
-    });
+    const exist = await Persona.findOne({ dni: req.params.dni });
+    if (exist) {
+      await Persona.findOneAndRemove({ dni: req.params.dni });
+      return res.status(200).json({
+        message: 'Persona borrada',
+      });
+    } else {
+      return res.status(200).json({
+        message: 'No es posible borrar, No se encuentra persona',
+      });
+    }
   } catch (error) {
     const { message } = error;
     return res.status(404).json({
@@ -64,10 +80,13 @@ export const borrarPersona = async (req, res) => {
 
 export const actualizarPersona = async (req, res) => {
   try {
-    const persona = await service.patchPerson(req);
+    const persona = await Persona.findOneAndUpdate(
+      { dni: req.params.dni },
+      { $set: req.body },
+    );
+    if (!persona) throw new Error('No se encontro persona');
     return res.status(200).json({
-      message: 'Processing of the Patch response by DNI to /person',
-      response: persona,
+      message: 'Actualizacion realizada',
     });
   } catch (error) {
     const { message } = error;

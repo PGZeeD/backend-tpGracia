@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
-// import bcryptjs from 'bcryptjs';
 
-const { Schema, model } = mongoose;
+const { Schema } = mongoose;
 
 const tramiteSchema = new Schema({
   //Descripción, Fecha de Alta, Fecha de Cierre, DNI de la persona, Tipo de Trámite.
@@ -11,12 +10,14 @@ const tramiteSchema = new Schema({
   },
   fAlta: {
     type: Date,
-    default: new Date(),
+    default: Date.now,
     required: true,
   },
   fBaja: {
     type: Date,
-    default: new Date(),
+    default: () => new Date(+new Date() + 7 * 24 * 60 * 60 * 1000),
+    trim: true,
+    required: true,
   },
   dniAutor: {
     type: Number,
@@ -26,8 +27,9 @@ const tramiteSchema = new Schema({
   tipo: {
     type: String,
     required: true,
+    default: 'Particular',
     trim: true,
   },
 });
 
-export const Tramite = mongoose.model('Tramite', userSchema);
+export const Tramite = mongoose.model('Tramite', tramiteSchema);

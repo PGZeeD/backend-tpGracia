@@ -1,12 +1,13 @@
 # API REST
 
 Proyecto para clase de Jorge Gracia
+
 # backend-tpGracia
 
 CONSIGNA DEL TRABAJO PRÁCTICO FINAL
 Integrantes del GRUPO: 2 Máximo
 
-Fecha de Entrega:  07/11
+Fecha de Entrega: 07/11
 
 Tecnologías permitidas: NodeJS , MySQL ó MongoDB
 
