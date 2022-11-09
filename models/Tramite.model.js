@@ -19,16 +19,18 @@ const tramiteSchema = new Schema({
     trim: true,
     required: true,
   },
-  dniAutor: {
-    type: Number,
-    required: true,
-    trim: true,
+  autor: {
+    type: Schema.Types.ObjectId,
+    ref: 'Persona',
   },
   tipo: {
     type: String,
     required: true,
     default: 'Particular',
     trim: true,
+  },
+  codigo: {
+    type: String,
   },
 });
 

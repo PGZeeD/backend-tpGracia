@@ -1,9 +1,15 @@
 import { Tramite } from '../models/Tramite.model.js';
+import { Persona } from '../models/Persona.model.js';
 
 export const mostrarTramites = async (req, res) => {
   try {
-    const tramites = await Tramite.find({});
-    if (!tramites) {
+    let tramites;
+    if (req.query.tipo) {
+      tramites = await Tramite.find({ tipo: req.query.tipo }).populate('autor');
+    } else {
+      tramites = await Tramite.find({}).populate('autor');
+    }
+    if (!tramites.length) {
       return res.status(200).json({
         message: 'Tramites no encontrados',
       });
@@ -22,10 +28,16 @@ export const mostrarTramites = async (req, res) => {
 };
 
 export const nuevoTramite = async (req, res) => {
-  const { descripcion, fAlta, fBaja, dniAutor, tipo } = req.body;
+  const { descripcion, fAlta, fBaja, tipo } = req.body;
+
   try {
-    const tramite = new Tramite({ descripcion, fAlta, fBaja, dniAutor, tipo });
-    if (tramite) await tramite.save();
+    const persona = await Persona.findOne({ dni: req.params.dni });
+    const tramite = new Tramite({ descripcion, fAlta, fBaja, tipo });
+    if (tramite) {
+      tramite.codigo = persona.dni;
+      tramite.autor = persona.id;
+      await tramite.save();
+    }
     return res.json({ ok: 'tramite creado', message: tramite });
   } catch (error) {
     const { message } = error;
@@ -37,7 +49,10 @@ export const nuevoTramite = async (req, res) => {
 
 export const buscarTramite = async (req, res) => {
   try {
-    const tramite = await Tramite.find({ _id: req.params.id });
+    const tramite = await Tramite.findOne({
+      dni: req.params.dni,
+      descripcion: req.query.d,
+    });
     console.log(tramite);
     if (tramite) {
       return res.status(200).json({
@@ -59,9 +74,12 @@ export const buscarTramite = async (req, res) => {
 
 export const borrarTramite = async (req, res) => {
   try {
-    const exist = await Tramite.findOne({ _id: req.params.id });
+    const exist = await Tramite.findOne({
+      dni: req.params.dni,
+      descripcion: req.query.d,
+    });
     if (exist) {
-      await Tramite.findOneAndRemove({ _id: req.params.id });
+      await Tramite.findOneAndRemove(exist.id);
       return res.status(200).json({
         message: 'Tramite borrado',
       });
@@ -80,14 +98,20 @@ export const borrarTramite = async (req, res) => {
 
 export const actualizarTramite = async (req, res) => {
   try {
-    const tramite = await Tramite.findOneAndUpdate(
-      { _id: req.params.id },
-      { $set: req.body },
-    );
-    if (!tramite) throw new Error('No se encontro tramite');
-    return res.status(200).json({
-      message: 'Tramite actualizado',
+    const exist = await Tramite.findOne({
+      dni: req.params.dni,
+      descripcion: req.query.d,
     });
+    if (exist) {
+      await Tramite.findOneAndUpdate(exist.id, req.body);
+      return res.status(200).json({
+        message: 'Tramite actualizado',
+      });
+    } else {
+      return res.status(200).json({
+        message: 'No se encontro tramite',
+      });
+    }
   } catch (error) {
     const { message } = error;
     return res.status(404).json({

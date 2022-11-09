@@ -25,7 +25,11 @@ export const nuevaPersona = async (req, res) => {
   const { nombre, apellido, dni, email, fnacim, telefono } = req.body;
   try {
     const persona = new Persona({ nombre, apellido, dni, email, fnacim, telefono });
-    if (persona) await persona.save();
+
+    if (persona) {
+      await persona.save();
+    }
+
     return res.json({ ok: 'persona creada', message: persona });
   } catch (error) {
     console.log(error);
